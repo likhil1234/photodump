@@ -114,6 +114,60 @@ const TrashIcon = memo(() => (
 ));
 
 // --- Core Components ---
+
+// --- Core Components ---
+
+const SecurityEnhancer = () => {
+  useEffect(() => {
+    // --- 1. Developer Tools Blocker ---
+    // This function checks if the dev tools are open.
+    const devToolsChecker = () => {
+      // A small delay is normal, but a large one indicates the debugger is open.
+      const threshold = 160;
+      const startTime = new Date();
+      // The 'debugger' statement only pauses the code if dev tools are open.
+      debugger;
+      const endTime = new Date();
+
+      if (endTime.getTime() - startTime.getTime() > threshold) {
+        // If the delay is too long, the dev tools are open. We'll clear the page.
+        document.body.innerHTML = `
+          <div style="display:flex; align-items:center; justify-content:center; height:100vh; font-family:sans-serif; background-color:#EEE9DA; color:#6096B4; text-align: center;">
+            <h1>Developer tools are not permitted on this site. <br/> Please close them and refresh the page.</h1>
+          </div>
+        `;
+      }
+    };
+
+    // We run the check periodically.
+    const intervalId = setInterval(devToolsChecker, 1000);
+
+    // --- 2. Override Canvas Download Methods ---
+    try {
+      // This makes it harder to right-click the canvas and save, or to script a download.
+      HTMLCanvasElement.prototype.toBlob = function () {
+        console.error("Error: Image downloading is disabled via toBlob().");
+        return null;
+      };
+      HTMLCanvasElement.prototype.toDataURL = function () {
+        console.error("Error: Image downloading is disabled via toDataURL().");
+        // Return a 1x1 transparent pixel instead of the real image data.
+        return "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=";
+      };
+    } catch (e) {
+      console.warn("Could not override canvas methods.");
+    }
+
+    // --- Cleanup on component unmount ---
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, []);
+
+  return null; // This component renders nothing to the screen.
+};
+
+// ... (Your other components: SecureImage, PhotoViewerModal, etc.)
 const SecureImage = ({ imageUrl }) => {
   const canvasRef = useRef(null);
 
@@ -542,10 +596,7 @@ const AppContent = () => {
           <p className="text-sm mt-1 pl-7">{error}</p>
         </div>
       )}
-      <div className="p-4 mb-10 border border-[#93BFCF] bg-[#bdcdd644] rounded-lg text-[#6096B4]">
-        <h3 className="font-bold flex items-center"><WarningIcon />Security Notice</h3>
-        <p className="text-sm mt-1 pl-7">This tool uses several methods to make it difficult to download images. However, <b>no browser-based protection is foolproof.</b> This tool provides a deterrent, not absolute security.</p>
-      </div>
+      
 
       {isLoading ? (
         <div className="text-center py-16 text-[#93BFCF] opacity-70">Loading images...</div>
@@ -585,6 +636,9 @@ const AppContent = () => {
 export default function App() {
   return (
     <AuthProvider>
+      {/* This activates all the new security features */}
+      <SecurityEnhancer />
+      
       <div className="bg-[#EEE9DA] text-[#6096B4] min-h-screen font-sans">
         <div className="container mx-auto p-4 sm:p-6 lg:p-8">
           <header className="text-center mb-10">
@@ -595,7 +649,7 @@ export default function App() {
             <AppContent />
           </main>
           <footer className="text-center mt-16 py-6 border-t border-[#BDCDD6]">
-            <p className="text-sm text-[#6096B4] opacity-70">© 2025 PhotoDump.</p>
+            <p className="text-sm text-[#6096B4] opacity-70">© 2025 PhotoDump. All rights reserved.</p>
           </footer>
         </div>
       </div>
