@@ -1,12 +1,22 @@
-# React + Vite
+# PhotoDump 📸
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A secure client-side photo gallery application built with React and Supabase. This project allows users to securely log in, upload photos to a private gallery, manage their profile, and delete their images. A key feature is the rendering of all images onto HTML `<canvas>` elements to deter simple right-click downloading.
 
-Currently, two official plugins are available:
+## ✨ Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+-   **Secure Authentication:** Google OAuth login handled by Supabase Auth.
+-   **Profile Management:** Users can update their display name and profile picture (avatar).
+-   **Photo Gallery:**
+    -   Drag-and-drop or click to upload multiple images.
+    -   Images are stored securely in a user-specific folder in Supabase Storage.
+    -   Hover over an image to reveal a button to permanently delete it.
+-   **Enhanced Security:**
+    -   All gallery and avatar images are rendered on `<canvas>` elements to make direct downloading more difficult.
+    -   Users are automatically logged out after 15 minutes of inactivity.
+    -   Robust Row-Level Security (RLS) policies on the Supabase backend ensure users can only access and manage their own data.
+-   **Responsive Design:** A clean, mobile-first interface styled with Tailwind CSS.
 
-## Expanding the ESLint configuration
+## 💻 Tech Stack
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+-   **Frontend:** React, Tailwind CSS
+-   **Backend:** Supabase (Authentication, Postgres Database, Storage)
